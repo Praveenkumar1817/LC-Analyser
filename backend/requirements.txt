@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+sqlalchemy
+asyncpg
+databases
+redis
+httpx
+pydantic
+pydantic-settings
+google-generativeai
+numpy
+python-dotenv
+alembic
