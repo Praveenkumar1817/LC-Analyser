@@ -292,7 +292,7 @@ export default function ProfileDashboard({ data, onBack }: { data: any; onBack: 
   const breakdown = score_breakdown || { volume: 0, quality: 0, contest: 0, consistency: 0 };
 
   const api = useMemo(
-    () => axios.create({ baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1" }),
+    () => axios.create({ baseURL: process.env.NEXT_PUBLIC_API_URL || "https://lc-analyser.onrender.com/api/v1" }),
     []
   );
 
@@ -1253,11 +1253,11 @@ export default function ProfileDashboard({ data, onBack }: { data: any; onBack: 
                                         <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 12 }}>
                                           <div style={{ display: "flex", justifyContent: "space-between", gap: 16 }}>
                                             <span style={{ color: u1?.color, fontSize: 12, fontWeight: 700 }}>{username}:</span>
-                                            <span style={{ color: u1?.color, fontSize: 12, fontWeight: 700, fontFamily: "monospace" }}>{Math.round(u1?.value || 0)}</span>
+                                            <span style={{ color: u1?.color, fontSize: 12, fontWeight: 700, fontFamily: "monospace" }}>{Math.round(Number(u1?.value) || 0)}</span>
                                           </div>
                                           <div style={{ display: "flex", justifyContent: "space-between", gap: 16 }}>
                                             <span style={{ color: u2?.color, fontSize: 12, fontWeight: 700 }}>{compareData.username}:</span>
-                                            <span style={{ color: u2?.color, fontSize: 12, fontWeight: 700, fontFamily: "monospace" }}>{Math.round(u2?.value || 0)}</span>
+                                            <span style={{ color: u2?.color, fontSize: 12, fontWeight: 700, fontFamily: "monospace" }}>{Math.round(Number(u2?.value) || 0)}</span>
                                           </div>
                                         </div>
                                         <div style={{ paddingTop: 8, borderTop: "1px solid #1e293b", fontSize: 11, color: "var(--text-2)" }}>
