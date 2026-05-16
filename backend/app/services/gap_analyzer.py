@@ -26,54 +26,48 @@ from typing import Literal
 # ── Company knowledge base ───────────────────────────────────────────────────
 
 COMPANY_PROFILES: dict[str, dict] = {
-    "google": {
+    "fintech": {
+        "required_tags": [
+            "Dynamic Programming", "Graphs", "Trees",
+            "Math", "Bit Manipulation", "Two Pointers",
+        ],
+        "min_hard_ratio": 0.25,
+        "min_total":      120,
+        "rating_target":  1950,
+        "weights":        {"topics": 0.25, "volume": 0.15, "hard": 0.25, "contest": 0.35},
+        "description":    "Fintech companies value low-latency, mathematical problem-solving, and optimization. High contest ratings and hard problem fluency are critical.",
+    },
+    "product_tier_1": {
         "required_tags": [
             "Dynamic Programming", "Graphs", "Trees",
             "Binary Search", "String Manipulation", "Backtracking",
         ],
         "min_hard_ratio": 0.20,
         "min_total":      150,
-        "rating_target":  1900,
-        "description":    "Google expects strong algorithmic thinking and hard-problem fluency. Hards and contest experience are heavily weighted.",
+        "rating_target":  1850,
+        "weights":        {"topics": 0.40, "volume": 0.20, "hard": 0.20, "contest": 0.20},
+        "description":    "Tier 1 Product Companies (FAANG, top tech) expect exceptional algorithmic thinking and deep pattern knowledge. Optimal complexity and strong core topics are required.",
     },
-    "meta": {
+    "product_tier_2": {
         "required_tags": [
-            "Arrays", "Graphs", "Dynamic Programming",
-            "Trees", "Sliding Window", "Two Pointers",
-        ],
-        "min_hard_ratio": 0.15,
-        "min_total":      120,
-        "rating_target":  1750,
-        "description":    "Meta focuses on speed and clean code on medium-hard problems. Breadth across standard patterns matters.",
-    },
-    "amazon": {
-        "required_tags": [
-            "Trees", "Dynamic Programming", "Graphs",
-            "Hash Table", "Sliding Window", "Heap",
+            "Arrays", "Trees", "Dynamic Programming",
+            "Hash Table", "Sliding Window", "Graphs",
         ],
         "min_hard_ratio": 0.10,
         "min_total":      100,
-        "rating_target":  1600,
-        "description":    "Amazon tests breadth across common patterns. LP integration means communication under pressure matters as much as speed.",
+        "rating_target":  1650,
+        "weights":        {"topics": 0.45, "volume": 0.30, "hard": 0.15, "contest": 0.10},
+        "description":    "Tier 2 Product Companies (Unicorns, mid-tier) prioritize solid problem-solving fundamentals and clean code over obscure algorithms. Broad coverage of medium problems is key.",
     },
-    "microsoft": {
+    "service_based": {
         "required_tags": [
-            "Trees", "Arrays", "Dynamic Programming",
-            "Graphs", "String Manipulation",
-        ],
-        "min_hard_ratio": 0.10,
-        "min_total":      80,
-        "rating_target":  1550,
-        "description":    "Microsoft values clear problem solving and communication. Strong foundations in trees and arrays are essential.",
-    },
-    "startup": {
-        "required_tags": [
-            "Arrays", "Hash Table", "Trees", "String Manipulation",
+            "Arrays", "Hash Table", "String Manipulation", "Two Pointers", "Sorting",
         ],
         "min_hard_ratio": 0.05,
-        "min_total":      60,
+        "min_total":      80,
         "rating_target":  0,
-        "description":    "Startups test practical coding skill over algorithmic depth. Clean, working code matters more than optimal Big-O.",
+        "weights":        {"topics": 0.60, "volume": 0.30, "hard": 0.10, "contest": 0.00},
+        "description":    "Service-Based companies test practical coding skills and standard patterns. A broad coverage of foundational data structures is much more important than hard problems or contest ratings.",
     },
 }
 
@@ -123,6 +117,8 @@ _ALIASES: dict[str, tuple[str, ...]] = {
     "tree":               ("tree", "trees"),
     "two pointers":       ("two pointers",),
     "heap":               ("heap (priority queue)", "priority queue", "heap"),
+    "math":               ("math", "mathematics"),
+    "bit manipulation":   ("bit manipulation", "bitmask"),
 }
 
 
@@ -174,14 +170,14 @@ class GapAnalyzer:
       7. Estimate weeks to close all gaps at 25 problems/week.
     """
 
-    def analyze(self, features: dict, target_company: str = "google") -> ReadinessReport:
+    def analyze(self, features: dict, target_company: str = "product_tier_1") -> ReadinessReport:
         """
         Produce a ReadinessReport for the given features against target_company.
         features must come from FeatureEngineer.extract_features().
         """
-        target = (target_company or "google").strip().lower()
+        target = (target_company or "product_tier_1").strip().lower()
         if target not in COMPANY_PROFILES:
-            target = "google"
+            target = "product_tier_1"
 
         prof             = COMPANY_PROFILES[target]
         topic_skills     = dict(features.get("topic_skills",       {}) or {})
@@ -194,7 +190,7 @@ class GapAnalyzer:
         min_hard         = float(prof["min_hard_ratio"])
         rating_target    = float(prof["rating_target"])
 
-        component_scores: list[float] = []
+        topic_scores: list[float] = []
         strengths:        list[str]   = []
         gaps:             list[TopicGap] = []
 
@@ -202,7 +198,7 @@ class GapAnalyzer:
         for req_tag in prof["required_tags"]:
             _mk, skill, solved = _resolve_topic(req_tag, topic_skills, topic_dist)
             comp = min(1.0, skill / 70.0)   # 70 = "good enough" threshold
-            component_scores.append(comp)
+            topic_scores.append(comp)
 
             if skill >= 70:
                 strengths.append(f"{req_tag} (skill {skill})")
@@ -225,33 +221,40 @@ class GapAnalyzer:
                     priority=priority,
                     reason=messages[priority],
                 ))
+                
+        topic_score_avg = sum(topic_scores) / max(1, len(topic_scores))
 
         # ── 2. Volume check ───────────────────────────────────────────
         vol_score = min(1.0, total / max(min_total, 1))
-        component_scores.append(vol_score)
 
         # ── 3. Hard-ratio check ───────────────────────────────────────
         hard_score = (
             min(1.0, hard_ratio / max(min_hard, 1e-6))
             if min_hard > 0 else 1.0
         )
-        component_scores.append(hard_score)
 
         # ── 4. Contest check ──────────────────────────────────────────
         if rating_target > 0:
             # 0.25 proxy for non-contestants (we don't fully penalise absence)
-            rating_score = min(1.0, rating / rating_target) if rating > 0 else 0.25
-            component_scores.append(rating_score)
+            contest_score = min(1.0, rating / rating_target) if rating > 0 else 0.25
         else:
-            component_scores.append(1.0)   # rating not evaluated for startups
+            contest_score = 1.0   # rating not evaluated for startups
 
-        # ── 5. Composite readiness ────────────────────────────────────
-        readiness_score = round(
-            (sum(component_scores) / len(component_scores)) * 100.0, 1
+        # ── 5. Composite readiness (Weighted) ─────────────────────────
+        w = prof.get("weights", {"topics": 0.25, "volume": 0.25, "hard": 0.25, "contest": 0.25})
+        raw_score = (
+            topic_score_avg * w["topics"] +
+            vol_score * w["volume"] +
+            hard_score * w["hard"] +
+            contest_score * w["contest"]
         )
 
-        # ── 6. Ready gate ─────────────────────────────────────────────
         has_critical = any(g.priority == "critical" for g in gaps)
+        penalty = 0.8 if has_critical else 1.0  # 20% penalty for missing critical topics
+        
+        readiness_score = round(raw_score * penalty * 100.0, 1)
+
+        # ── 6. Ready gate ─────────────────────────────────────────────
         is_ready     = readiness_score >= 75.0 and not has_critical
 
         # ── 7. Time estimate ──────────────────────────────────────────
@@ -303,7 +306,7 @@ class GapAnalyzer:
 
         plan.append(
             f"📊 Baseline: {total} total solves, {hard_ratio:.0%} hard ratio — "
-            f"target requires ≥{min_total} solves and ≥{prof['min_hard_ratio']:.0%} hard."
+            f"target tier requires ≥{min_total} solves and ≥{prof['min_hard_ratio']:.0%} hard."
         )
 
         if critical:
@@ -315,7 +318,7 @@ class GapAnalyzer:
         if needs_volume:
             needed = min_total - total
             plan.append(
-                f"📈 Solve {needed} more problems to reach the {min_total}-problem minimum. "
+                f"📈 Solve {needed} more problems to reach the {min_total}-problem minimum for this tier. "
                 f"Focus on Mediums."
             )
 

@@ -26,7 +26,7 @@ const FEATURES = [
   {
     icon: Trophy,
     label: "Company Readiness",
-    desc: "See your readiness score for Google, Meta, Amazon, Microsoft, and Startups with a prioritised gap plan.",
+    desc: "See your readiness score for FAANG, Quant/HFT, Unicorns, and Startups with a prioritised gap plan.",
     color: "#22d3ee",
   },
 ];

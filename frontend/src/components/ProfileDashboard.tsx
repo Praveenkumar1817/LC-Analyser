@@ -273,7 +273,7 @@ export default function ProfileDashboard({ data, onBack }: { data: any; onBack: 
   const [compareError, setCompareError] = useState<string | null>(null);
   const [compareData, setCompareData] = useState<any>(null);
 
-  const [gapTarget, setGapTarget] = useState<"google" | "meta" | "amazon" | "microsoft" | "startup">("google");
+  const [gapTarget, setGapTarget] = useState<"fintech" | "product_tier_1" | "product_tier_2" | "service_based">("product_tier_1");
   const [gapLoading, setGapLoading] = useState(false);
   const [gapError, setGapError] = useState<string | null>(null);
   const [gapReport, setGapReport] = useState<any>(null);
@@ -1327,7 +1327,14 @@ export default function ProfileDashboard({ data, onBack }: { data: any; onBack: 
 
                 {/* Target selector */}
                 <div style={{ display: "flex", gap: 10, marginBottom: "1.5rem", flexWrap: "wrap" }}>
-                  {(["google", "meta", "amazon", "microsoft", "startup"] as const).map(c => (
+                  {(["fintech", "product_tier_1", "product_tier_2", "service_based"] as const).map(c => {
+                    const displayNames: Record<string, string> = {
+                      fintech: "Fintech",
+                      product_tier_1: "Product Based Tier 1",
+                      product_tier_2: "Product Based Tier 2",
+                      service_based: "Service Based"
+                    };
+                    return (
                     <button
                       key={c}
                       onClick={() => setGapTarget(c)}
@@ -1343,9 +1350,9 @@ export default function ProfileDashboard({ data, onBack }: { data: any; onBack: 
                         transition: "all .2s",
                       }}
                     >
-                      {c === "startup" ? "Startup" : c.charAt(0).toUpperCase() + c.slice(1)}
+                      {displayNames[c]}
                     </button>
-                  ))}
+                  )})}
                   <button
                     onClick={loadGapReport}
                     disabled={gapLoading}

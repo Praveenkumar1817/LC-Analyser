@@ -24,7 +24,7 @@ router = APIRouter()
 fe     = FeatureEngineer()
 
 # Valid companies — mirrors COMPANY_PROFILES in gap_analyzer.py
-VALID_COMPANIES = {"google", "meta", "amazon", "microsoft", "startup"}
+VALID_COMPANIES = {"fintech", "product_tier_1", "product_tier_2", "service_based"}
 
 
 # ── Shared profile-building helper ────────────────────────────────────────────
@@ -173,8 +173,8 @@ async def get_user_profile(username: str):
 async def get_gap_analysis(
     username: str,
     target: str = Query(
-        default="google",
-        description="Target company: google | meta | amazon | microsoft | startup",
+        default="product_tier_1",
+        description="Target company: fintech | product_tier_1 | product_tier_2 | service_based",
     ),
 ):
     """
@@ -185,9 +185,9 @@ async def get_gap_analysis(
 
     Cache key: lc_gap_v1_{username}_{target}  (30-minute TTL)
     """
-    t = (target or "google").strip().lower()
+    t = (target or "product_tier_1").strip().lower()
     if t not in VALID_COMPANIES:
-        t = "google"
+        t = "product_tier_1"
 
     cache_key = f"lc_gap_v1_{username}_{t}"
     try:
