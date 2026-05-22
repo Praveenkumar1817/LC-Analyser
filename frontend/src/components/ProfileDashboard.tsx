@@ -601,7 +601,7 @@ export default function ProfileDashboard({ data, onBack }: { data: any; onBack: 
         borderBottom: "1px solid var(--border)",
         padding: "0 1.5rem",
       }}>
-        <div style={{
+        <div className="dashboard-header-inner" style={{
           maxWidth: 1400, margin: "0 auto", height: 56,
           display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16,
         }}>
@@ -644,7 +644,7 @@ export default function ProfileDashboard({ data, onBack }: { data: any; onBack: 
               <img src={avatar_url} alt={username}
                 style={{ width: 30, height: 30, borderRadius: 8, objectFit: "cover", border: "1px solid var(--border)" }} />
             )}
-            <span style={{ fontSize: 13, fontWeight: 700, color: "var(--text-1)" }}>{username}</span>
+            <span className="header-username-text" style={{ fontSize: 13, fontWeight: 700, color: "var(--text-1)" }}>{username}</span>
             <span style={{
               fontSize: 11, fontWeight: 800, letterSpacing: "0.05em",
               padding: "2px 10px", borderRadius: 99,
@@ -658,22 +658,10 @@ export default function ProfileDashboard({ data, onBack }: { data: any; onBack: 
       </header>
 
       {/* ── Body (sidebar + content) ── */}
-      <div style={{ display: "flex", flex: 1, maxWidth: 1400, margin: "0 auto", width: "100%", padding: "0" }}>
+      <div className="dashboard-body">
 
-        {/* ── Sidebar ── */}
-        <aside style={{
-          width: 220,
-          flexShrink: 0,
-          borderRight: "1px solid var(--border)",
-          padding: "1.5rem 0",
-          display: "flex",
-          flexDirection: "column",
-          gap: 4,
-          position: "sticky",
-          top: 56,
-          height: "calc(100vh - 56px)",
-          overflowY: "auto",
-        }}>
+        {/* ── Sidebar (desktop) ── */}
+        <aside className="dashboard-sidebar">
           {SECTIONS.map(s => {
             const active = activeSection === s.id;
             return (
@@ -702,7 +690,7 @@ export default function ProfileDashboard({ data, onBack }: { data: any; onBack: 
           })}
 
           {/* Profile summary in sidebar */}
-          <div style={{ marginTop: "auto", padding: "1.5rem 20px", borderTop: "1px solid var(--border)" }}>
+          <div className="sidebar-profile-summary">
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {avatar_url && (
                 <img src={avatar_url} alt={username}
@@ -740,8 +728,26 @@ export default function ProfileDashboard({ data, onBack }: { data: any; onBack: 
           </div>
         </aside>
 
+        {/* ── Mobile bottom nav ── */}
+        <nav className="mobile-bottom-nav" aria-label="Section navigation">
+          {SECTIONS.map(s => {
+            const active = activeSection === s.id;
+            return (
+              <button
+                key={s.id}
+                className={`mobile-nav-btn${active ? " active" : ""}`}
+                onClick={() => setActiveSection(s.id)}
+                aria-label={s.label}
+              >
+                <s.icon size={18} />
+                {s.shortLabel}
+              </button>
+            );
+          })}
+        </nav>
+
         {/* ── Main content ── */}
-        <main style={{ flex: 1, padding: "2rem", overflowX: "hidden", minWidth: 0 }}>
+        <main className="dashboard-main">
           <AnimatePresence mode="wait">
 
             {/* ── OVERVIEW ── */}
@@ -754,7 +760,7 @@ export default function ProfileDashboard({ data, onBack }: { data: any; onBack: 
                 transition={{ duration: 0.3 }}
               >
                 {/* Profile hero */}
-                <div style={{
+                <div className="profile-hero" style={{
                   background: "var(--bg-surface)",
                   border: "1px solid var(--border)",
                   borderRadius: 20,
@@ -763,7 +769,7 @@ export default function ProfileDashboard({ data, onBack }: { data: any; onBack: 
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "space-between",
-                  gap: "2rem",
+                  gap: "1.5rem",
                   flexWrap: "wrap",
                   position: "relative",
                   overflow: "hidden",
@@ -822,7 +828,7 @@ export default function ProfileDashboard({ data, onBack }: { data: any; onBack: 
                 </div>
 
                 {/* Stat tiles */}
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "1rem", marginBottom: "1.5rem" }}>
+                <div className="stat-grid-4" style={{ marginBottom: "1.5rem" }}>
                   <StatTile label="Total Solved"        value={stats.total_solved}                                                                    icon={Code2}       accent="#5b6ef5" />
                   <StatTile label="Acceptance Rate"     value={`${stats.acceptance_rate?.toFixed(1)}%`}                                               icon={Target}      accent="#a855f7" />
                   <StatTile label="Best Contest Rank"   value={stats.best_contest_rank && stats.best_contest_rank < 999999 ? `#${fmtInt(stats.best_contest_rank)}` : "N/A"} icon={Hash} accent="#22d3ee" />
@@ -830,7 +836,7 @@ export default function ProfileDashboard({ data, onBack }: { data: any; onBack: 
                 </div>
 
                 {/* Score breakdown + confidence */}
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1.5rem" }}>
+                <div className="stat-grid-2" style={{ marginBottom: "1.5rem" }}>
                   <div style={{ background: "var(--bg-surface)", border: "1px solid var(--border)", borderRadius: 16, padding: "1.5rem" }}>
                     <SectionHeader title="Score Breakdown" subtitle="Unified 0–100 model: volume · quality · contest · consistency" />
                     <ScoreBreakdownBars breakdown={breakdown} />
@@ -861,7 +867,7 @@ export default function ProfileDashboard({ data, onBack }: { data: any; onBack: 
                 </div>
 
                 {/* Charts */}
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                <div className="stat-grid-2">
                   {/* Difficulty bar chart */}
                   <div style={{ background: "var(--bg-surface)", border: "1px solid var(--border)", borderRadius: 16, padding: "1.5rem" }}>
                     <SectionHeader title="Problem Difficulty" subtitle="Distribution across Easy, Medium, Hard" />

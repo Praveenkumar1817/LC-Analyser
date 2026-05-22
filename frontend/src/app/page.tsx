@@ -125,7 +125,7 @@ export default function Home() {
         </nav>
 
         {/* ── Hero ── */}
-        <section style={{
+        <section className="hero-section" style={{
           flex: 1, display: "flex", flexDirection: "column",
           alignItems: "center", justifyContent: "center",
           padding: "5rem 1.5rem 3rem",
@@ -188,6 +188,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25 }}
+            className="search-form-wrapper"
             style={{ width: "100%", maxWidth: 540, position: "relative" }}
           >
             <div style={{
@@ -322,7 +323,7 @@ export default function Home() {
             maxWidth: 1100, margin: "0 auto", width: "100%",
           }}
         >
-          <div style={{
+          <div className="features-grid" style={{
             display: "grid",
             gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
             gap: "1rem",
