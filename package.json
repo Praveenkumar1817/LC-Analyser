@@ -2,9 +2,8 @@
   "name": "lc-analyser",
   "private": true,
   "scripts": {
-    "vercel-build": "npm run vercel-build --prefix frontend",
+    "vercel-build": "npm run build --prefix frontend && node scripts/prepare-vercel-output.js",
     "build": "npm run build --prefix frontend",
-    "dev": "npm run dev --prefix frontend",
-    "lint": "npm run lint --prefix frontend"
+    "dev": "npm run dev --prefix frontend"
   }
 }

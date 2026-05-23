@@ -38,11 +38,24 @@ NEXT_PUBLIC_API_URL=https://your-backend-url.onrender.com/api/v1
 ---
 
 ## 4. Frontend Deployment (Vercel)
-1. Push the `/frontend` directory to the same (or different) GitHub repo.
-2. Log into [Vercel](https://vercel.com/) and "Import Project".
-3. Set the Root Directory to `frontend`.
-4. Add `NEXT_PUBLIC_API_URL` to Vercel Environment Variables, pointing to the Render backend URL you just deployed.
-5. Click **Deploy**.
+
+This repo is a monorepo (`frontend/` + `backend/`). Use **one** of these setups:
+
+### Option A — Recommended (simplest)
+1. Import the GitHub repo in [Vercel](https://vercel.com/).
+2. **Root Directory:** `frontend`
+3. **Build Command:** leave default (`next build`) or `npm run vercel-build`
+4. **Install Command:** leave default (`npm install`)
+5. Add `NEXT_PUBLIC_API_URL` (your Render backend URL + `/api/v1`).
+6. Deploy.
+
+### Option B — Deploy from repository root
+If Root Directory is `.` (repo root), the included `vercel.json` runs the build in `frontend/` and copies `.next` to the root for Vercel’s Next.js builder. Do **not** set a custom Output Directory in the Vercel dashboard.
+
+1. Root Directory: `.` (default)
+2. Build Command: `npm run vercel-build` (or leave empty to use `vercel.json`)
+3. Add `NEXT_PUBLIC_API_URL` as above.
+4. Deploy.
 
 ## 5. Scaling Considerations
 - Redis ensures we don't hit LeetCode API rate limits. Monitor its memory.
