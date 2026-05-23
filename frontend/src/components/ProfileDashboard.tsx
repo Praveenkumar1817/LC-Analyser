@@ -594,7 +594,7 @@ export default function ProfileDashboard({ data, onBack }: { data: any; onBack: 
       </div>
 
       {/* ── Top bar ── */}
-      <header style={{
+      <header className="dashboard-header" style={{
         position: "sticky", top: 0, zIndex: 40,
         background: "rgba(7,11,20,0.85)",
         backdropFilter: "blur(20px)",
@@ -606,9 +606,10 @@ export default function ProfileDashboard({ data, onBack }: { data: any; onBack: 
           display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16,
         }}>
           {/* Logo + back */}
-          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <div className="dashboard-header-left" style={{ display: "flex", alignItems: "center", gap: 16, minWidth: 0 }}>
             <button
               onClick={onBack}
+              aria-label="Back to search"
               style={{
                 display: "flex", alignItems: "center", gap: 7,
                 background: "var(--bg-elevated)", border: "1px solid var(--border)",
@@ -621,9 +622,9 @@ export default function ProfileDashboard({ data, onBack }: { data: any; onBack: 
               onMouseLeave={e => { e.currentTarget.style.color = "var(--text-2)"; e.currentTarget.style.borderColor = "var(--border)"; }}
             >
               <ArrowLeft size={14} />
-              Back
+              <span className="header-back-label">Back</span>
             </button>
-            <div style={{ width: 1, height: 20, background: "var(--border)" }} />
+            <div className="header-divider" style={{ width: 1, height: 20, background: "var(--border)", flexShrink: 0 }} />
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <div style={{
                 width: 28, height: 28,
@@ -632,24 +633,35 @@ export default function ProfileDashboard({ data, onBack }: { data: any; onBack: 
               }}>
                 <Zap size={13} color="#fff" fill="#fff" />
               </div>
-              <span style={{ fontWeight: 700, fontSize: 14, color: "var(--text-1)" }}>
+              <span className="header-brand-text" style={{ fontWeight: 700, fontSize: 14, color: "var(--text-1)" }}>
                 LC<span style={{ color: "var(--primary-light)" }}>Analyzer</span>
               </span>
             </div>
           </div>
 
           {/* Profile pill */}
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
+            <button
+              type="button"
+              className="mobile-export-btn"
+              onClick={handleExportCard}
+              disabled={exportingCard}
+              aria-label="Export portfolio card"
+            >
+              {exportingCard ? <Loader2 size={14} style={{ animation: "spin 1s linear infinite" }} /> : <Trophy size={14} />}
+              Export
+            </button>
             {avatar_url && (
               <img src={avatar_url} alt={username}
                 style={{ width: 30, height: 30, borderRadius: 8, objectFit: "cover", border: "1px solid var(--border)" }} />
             )}
             <span className="header-username-text" style={{ fontSize: 13, fontWeight: 700, color: "var(--text-1)" }}>{username}</span>
-            <span style={{
+            <span className="header-score-pill" style={{
               fontSize: 11, fontWeight: 800, letterSpacing: "0.05em",
               padding: "2px 10px", borderRadius: 99,
               background: "linear-gradient(135deg, var(--primary) 0%, var(--purple) 100%)",
               color: "#fff",
+              flexShrink: 0,
             }}>
               {Number.isFinite(mySkillScore) ? mySkillScore.toFixed(1) : "—"}&nbsp;/&nbsp;100
             </span>
@@ -812,14 +824,14 @@ export default function ProfileDashboard({ data, onBack }: { data: any; onBack: 
                   </div>
 
                   {/* Skill score ring */}
-                  <div style={{ display: "flex", alignItems: "center", gap: "2.5rem", zIndex: 1, flexWrap: "wrap" }}>
+                  <div className="profile-hero-stats profile-hero-right" style={{ zIndex: 1 }}>
                     <div style={{ textAlign: "center" }}>
                       <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-3)", marginBottom: 6 }}>Contest Rating</div>
                       <div style={{ fontSize: 28, fontWeight: 800, color: "var(--text-1)" }}>
                         {stats.contest_rating > 0 ? stats.contest_rating.toFixed(0) : "—"}
                       </div>
                     </div>
-                    <div style={{ width: 1, height: 60, background: "var(--border)" }} />
+                    <div className="profile-hero-divider" />
                     <div style={{ textAlign: "center" }}>
                       <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--primary-light)", marginBottom: 10 }}>Skill Score</div>
                       <ScoreRing score={mySkillScore} size={110} />
@@ -886,7 +898,7 @@ export default function ProfileDashboard({ data, onBack }: { data: any; onBack: 
 
                   {/* Radar chart */}
                   <div style={{ background: "var(--bg-surface)", border: "1px solid var(--border)", borderRadius: 16, padding: "1.5rem" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.75rem" }}>
+                    <div className="radar-header-row">
                       <SectionHeader title="Topic Skill Radar" subtitle="Top 8 major categories by problems solved" />
                       <button
                         onClick={() => setExtraTopicsOpen(true)}
@@ -929,7 +941,7 @@ export default function ProfileDashboard({ data, onBack }: { data: any; onBack: 
               >
                 <SectionHeader title="Problem Solving" subtitle="Major topic coverage with counts aggregated into core algorithm buckets." />
 
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
+                <div className="grid-2-cols" style={{ marginBottom: "1rem" }}>
                   {coachingInsights.map((insight, idx) => {
                     const bgColor = insight.type === "warning" ? "rgba(244,63,94,0.1)" : insight.type === "success" ? "rgba(16,185,129,0.1)" : "rgba(34,211,238,0.1)";
                     const textColor = insight.type === "warning" ? "#f43f5e" : insight.type === "success" ? "#10b981" : "#22d3ee";
@@ -947,11 +959,11 @@ export default function ProfileDashboard({ data, onBack }: { data: any; onBack: 
                   })}
                 </div>
 
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                <div className="grid-2-cols">
                   {/* Major topics Stacked BarChart */}
-                  <div style={{ background: "var(--bg-surface)", border: "1px solid var(--border)", borderRadius: 16, padding: "1.5rem" }}>
+                  <div style={{ background: "var(--bg-surface)", border: "1px solid var(--border)", borderRadius: 16, padding: "1.5rem", minWidth: 0 }}>
                     <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-3)", marginBottom: 16 }}>Major Topics Distribution</div>
-                    <div style={{ height: 400, marginLeft: "-1.5rem", marginTop: "-1rem" }}>
+                    <div className="chart-container-offset">
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart layout="vertical" data={stackedBarData} margin={{ top: 20, right: 30, left: 35, bottom: 5 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.5} horizontal={false} />
@@ -1046,19 +1058,19 @@ export default function ProfileDashboard({ data, onBack }: { data: any; onBack: 
                   <StatTile label="Avg Rank"          value={stats.avg_contest_rank ? `#${fmtInt(stats.avg_contest_rank)}` : "N/A"}                                                 icon={Activity} accent="#a855f7" />
                 </div>
 
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1.5rem" }}>
-                  <div style={{ background: "var(--bg-surface)", border: "1px solid var(--border)", borderRadius: 16, padding: "1.5rem" }}>
+                <div className="grid-2-cols" style={{ marginBottom: "1.5rem" }}>
+                  <div style={{ background: "var(--bg-surface)", border: "1px solid var(--border)", borderRadius: 16, padding: "1.5rem", minWidth: 0 }}>
                     <SectionHeader title="Ranking Signals" />
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                    <div className="grid-meta-2">
                       <MetaKV label="Contest Top %" value={pct(stats.top_percentage, 1)} tooltip="Percentage rank among all LeetCode users in contests (Lower is better)." />
                       <MetaKV label="Global Rank" value={stats.global_rank ? `#${fmtInt(stats.global_rank)}` : "N/A"} tooltip="Overall worldwide leaderboard ranking on LeetCode." />
                       <MetaKV label="Skill Score" value={`${mySkillScore.toFixed(1)} / 100`} mono tooltip="A holistic 0-100 skill score deterministically calculated combining volume, quality, consistency and contest ratings." />
                       <MetaKV label="Rating Trend" value={typeof rating_trend === "number" ? rating_trend.toFixed(2) : "—"} mono tooltip="Trajectory (slope) of the user's contest rating over recent contests. Positive means improving." />
                     </div>
                   </div>
-                  <div style={{ background: "var(--bg-surface)", border: "1px solid var(--border)", borderRadius: 16, padding: "1.5rem" }}>
+                  <div style={{ background: "var(--bg-surface)", border: "1px solid var(--border)", borderRadius: 16, padding: "1.5rem", minWidth: 0 }}>
                     <SectionHeader title="Advanced Signals" />
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                    <div className="grid-meta-2">
                       <MetaKV label="Topic Specialisation" value={typeof specialisation === "number" ? specialisation.toFixed(2) : "—"} mono tooltip="0 = Generalist (Evenly spread topics). 1 = Pointed Specialist (Grinding a single topic)." />
                       <MetaKV label="Submission CV" value={typeof submission_cv === "number" ? submission_cv.toFixed(2) : "—"} mono tooltip="Coefficient of Variation for daily submissions. Higher means bursty activity, lower means consistent daily practice." />
                       <MetaKV label="Platform Coverage" value={typeof platform_coverage === "number" ? `${(platform_coverage * 100).toFixed(1)}%` : "—"} mono tooltip="Percentage of the total available problem set solved by the user." />
@@ -1108,7 +1120,7 @@ export default function ProfileDashboard({ data, onBack }: { data: any; onBack: 
 
                 {/* Search form */}
                 <div style={{ background: "var(--bg-surface)", border: "1px solid var(--border)", borderRadius: 16, padding: "1.5rem", marginBottom: "1.5rem" }}>
-                  <form onSubmit={handleCompare} style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+                  <form onSubmit={handleCompare} className="compare-form-row" style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
                     <div style={{ flex: 1, minWidth: 220 }}>
                       <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-3)", marginBottom: 6 }}>Second Username</div>
                       <input
@@ -1164,7 +1176,7 @@ export default function ProfileDashboard({ data, onBack }: { data: any; onBack: 
                             : <><span style={{ color: "var(--primary-light)" }}>{comparisonVerdict.headline}</span> leads on more metrics ({comparisonVerdict.u1} vs {comparisonVerdict.u2})</>
                           }
                         </div>
-                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 8, marginTop: 12 }}>
+                        <div className="verdict-metrics-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 8, marginTop: 12 }}>
                           {comparisonVerdict.metrics.map(m => (
                             <div key={m.label} style={{
                               display: "flex", justifyContent: "space-between",
@@ -1182,7 +1194,7 @@ export default function ProfileDashboard({ data, onBack }: { data: any; onBack: 
                     )}
 
                     {/* Side by side stat tiles */}
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                    <div className="grid-2-cols">
                       <StatTile label={`${username} Solved`}          value={stats.total_solved}                              icon={Code2}     accent="#5b6ef5" />
                       <StatTile label={`${compareData.username} Solved`} value={compareData.stats?.total_solved ?? 0}       icon={Code2}     accent="#a855f7" />
                       <StatTile label={`${username} Skill`}           value={mySkillScore.toFixed(1)}                        icon={Sparkles}  accent="#22d3ee" />
@@ -1190,7 +1202,7 @@ export default function ProfileDashboard({ data, onBack }: { data: any; onBack: 
                     </div>
 
                     {/* Score breakdown side by side */}
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                    <div className="grid-2-cols">
                       <div style={{ background: "var(--bg-surface)", border: "1px solid var(--border)", borderRadius: 16, padding: "1.5rem" }}>
                         <div style={{ fontSize: 13, fontWeight: 800, color: "var(--primary-light)", marginBottom: 16 }}>{username}</div>
                         <ScoreBreakdownBars breakdown={breakdown} />
@@ -1202,10 +1214,10 @@ export default function ProfileDashboard({ data, onBack }: { data: any; onBack: 
                     </div>
 
                     {/* Comprehensive Stats & Signals side by side */}
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-                      <div style={{ background: "var(--bg-surface)", border: "1px solid var(--border)", borderRadius: 16, padding: "1.5rem" }}>
+                    <div className="grid-2-cols">
+                      <div style={{ background: "var(--bg-surface)", border: "1px solid var(--border)", borderRadius: 16, padding: "1.5rem", minWidth: 0 }}>
                         <div style={{ fontSize: 13, fontWeight: 800, color: "var(--primary-light)", marginBottom: 16 }}>{username} Stats & Signals</div>
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                        <div className="grid-meta-2">
                           <MetaKV label="Active Days" value={stats.active_days ?? "N/A"} />
                           <MetaKV label="Current Streak" value={stats.streak_days ? `${stats.streak_days} days` : "N/A"} />
                           <MetaKV label="Contest Avg Rank" value={stats.avg_contest_rank ? `#${fmtInt(stats.avg_contest_rank)}` : "N/A"} />
@@ -1217,9 +1229,9 @@ export default function ProfileDashboard({ data, onBack }: { data: any; onBack: 
                           <MetaKV label="Platform Coverage" value={typeof platform_coverage === "number" ? `${(platform_coverage * 100).toFixed(1)}%` : "—"} mono />
                         </div>
                       </div>
-                      <div style={{ background: "var(--bg-surface)", border: "1px solid var(--border)", borderRadius: 16, padding: "1.5rem" }}>
+                      <div style={{ background: "var(--bg-surface)", border: "1px solid var(--border)", borderRadius: 16, padding: "1.5rem", minWidth: 0 }}>
                         <div style={{ fontSize: 13, fontWeight: 800, color: "#a855f7", marginBottom: 16 }}>{compareData.username} Stats & Signals</div>
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                        <div className="grid-meta-2">
                           <MetaKV label="Active Days" value={compareData.stats?.active_days ?? "N/A"} />
                           <MetaKV label="Current Streak" value={compareData.stats?.streak_days ? `${compareData.stats.streak_days} days` : "N/A"} />
                           <MetaKV label="Contest Avg Rank" value={compareData.stats?.avg_contest_rank ? `#${fmtInt(compareData.stats.avg_contest_rank)}` : "N/A"} />
@@ -1343,6 +1355,7 @@ export default function ProfileDashboard({ data, onBack }: { data: any; onBack: 
                     return (
                     <button
                       key={c}
+                      className="company-target-btn"
                       onClick={() => setGapTarget(c)}
                       style={{
                         padding: "8px 20px",
@@ -1390,7 +1403,7 @@ export default function ProfileDashboard({ data, onBack }: { data: any; onBack: 
                 )}
 
                 {gapReport && (
-                  <div style={{ display: "grid", gridTemplateColumns: "260px 1fr", gap: "1rem" }}>
+                  <div className="grid-gap-layout">
                     {/* Score ring panel */}
                     <div style={{
                       background: "var(--bg-surface)", border: "1px solid var(--border)",
@@ -1667,7 +1680,7 @@ export default function ProfileDashboard({ data, onBack }: { data: any; onBack: 
                 </div>
               </div>
 
-              <div style={{
+              <div className="modal-topic-grid" style={{
                 overflowY: "auto", flex: 1,
                 display: "grid", gridTemplateColumns: "1fr 1fr",
                 gap: 8,

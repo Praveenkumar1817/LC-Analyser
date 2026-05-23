@@ -91,8 +91,8 @@ export default function Home() {
         style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
       >
         {/* ── Top nav ── */}
-        <nav style={{ borderBottom: "1px solid var(--border)", padding: "0 2rem" }}>
-          <div style={{ maxWidth: 1200, margin: "0 auto", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <nav className="landing-nav" style={{ borderBottom: "1px solid var(--border)", padding: "0 2rem" }}>
+          <div className="landing-nav-inner" style={{ maxWidth: 1200, margin: "0 auto", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <div style={{
                 width: 32, height: 32,
@@ -191,7 +191,9 @@ export default function Home() {
             className="search-form-wrapper"
             style={{ width: "100%", maxWidth: 540, position: "relative" }}
           >
-            <div style={{
+            <div
+              className="search-input-row"
+              style={{
               display: "flex",
               alignItems: "center",
               background: "var(--bg-surface)",
@@ -202,7 +204,6 @@ export default function Home() {
               gap: 10,
               transition: "border-color .2s, box-shadow .2s",
             }}
-            onFocus={() => {}}
             >
               <Search size={18} color="var(--text-3)" style={{ flexShrink: 0 }} />
               <input
